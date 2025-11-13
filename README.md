@@ -32,3 +32,17 @@ Right now the focus is on getting a clean, modular implementation of the game lo
 - **Web framework** (Flask-style app in `app.py`)
 - **HTML / CSS / JS** for the frontend
 - Modular structure for game logic and HTTP routes
+
+## Repository
+```
+.
+├── README.md
+└── liars-deck/                # Main application source
+    ├── app.py                 # Application entry point
+    ├── requirements.txt       # Python dependencies
+    ├── src/                   # Core game / utility logic
+    ├── models/                # Game state / data models
+    ├── routes/                # HTTP routes / controllers
+    ├── templates/             # HTML templates
+    └── static/                # CSS, JS, and other static assets
+```
