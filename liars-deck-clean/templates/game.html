@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Liar's Deck - Game</title>
+    <link rel="stylesheet" href="static/assets/css/game.css" />
+    <style>
+      body {
+        background: url('/static/images/lobby.jpg') no-repeat center center
+          fixed;
+        background-size: cover;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Main Game Container -->
+    <div id="game-container">
+      <!-- White Box for Game Area -->
+      <div id="game-box">
+        <!-- Central Table -->
+        <div id="players">
+          <div class="player top-player">
+            Player 1 (3 Cards)
+            <div class="player-cards">
+              <img src="static/images/cards/back.png" class="card" />
+              <img src="static/images/cards/back.png" class="card" />
+              <img src="static/images/cards/back.png" class="card" />
+            </div>
+          </div>
+          <!-- Players Positioned Around the Table -->
+          <div id="game-table">
+            <img src="static/images/table.jpg" alt="Game Table" />
+          </div>
+          <div class="player left-player">
+            Player 2 (2 Cards)
+            <div class="player-cards">
+              <img src="static/images/cards/back.png" class="card" />
+              <img src="static/images/cards/back.png" class="card" />
+            </div>
+          </div>
+          <div class="player right-player">
+            Player 3 (4 Cards)
+            <div class="player-cards">
+              <img src="static/images/cards/back.png" class="card" />
+              <img src="static/images/cards/back.png" class="card" />
+              <img src="static/images/cards/back.png" class="card" />
+              <img src="static/images/cards/back.png" class="card" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Your Hand -->
+        <div id="your-hand">
+          <h2>Your Hand - <span id="playerNameDisplay"></span></h2>
+          <div class="player-cards" id="yourCards">
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div id="actions">
+          <button onclick="playCard()">Play</button>
+          <button onclick="callBluff()">Bluff</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="static/assets/js/game.js"></script>
+    <script>
+      window.addEventListener("load", () => {
+        const name = sessionStorage.getItem("playerName");
+        if (name) {
+            document.getElementById("playerNameDisplay").textContent = name;
+        }
+      });
+    
+      window.addEventListener("load", getPlayerHand);
+
+        async function getPlayerHand() {
+            console.log("PEAKABOO")
+            const name = sessionStorage.getItem("playerName");
+            if (!name) {
+                alert("You are not in a lobby!");
+                return;
+            }
+
+            const response = await fetch(`/api/player/hand?name=${encodeURIComponent(name)}`);
+
+            const result = await response.json();
+
+            if (result.error) {
+                alert(result.error)
+                console.log(result.error)
+            }
+
+            const handContainer = document.getElementById("yourCards")
+            handContainer.innerHTML = "";
+
+            result.hand.forEach(card => {
+                const img = document.createElement("img");
+                img.src = `/static/images/cards/${card}.png`;
+                img.classList.add("card");
+                handContainer.appendChild(img);
+            });
+        }
+    </script>
+  </body>
+</html>

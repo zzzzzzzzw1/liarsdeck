@@ -1,0 +1,106 @@
+/* Full-screen blurred background */
+body {
+    font-family: 'Cinzel', serif;
+    background: url("../images/game-background.jpg") no-repeat center center fixed;
+    background-size: cover;
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* White game area (70% of screen) */
+#game-box {
+    width: 70vw;
+    height: 80vh;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Game table image */
+#game-table img {
+    width: 300px;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+/* Players around the table */
+#players {
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Player positions */
+.player {
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.top-player {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.left-player {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.right-player {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Player cards (face down for others) */
+.player-cards {
+    margin-top: 10px;
+}
+
+.player-cards .card {
+    width: 60px;
+    height: auto;
+}
+
+/* Your hand section */
+#your-hand {
+    margin-top: 50px;
+}
+
+.your-cards {
+    display: flex;
+    gap: 10px;
+}
+
+.your-cards .card {
+    width: 80px;
+    height: auto;
+    cursor: pointer;
+}
+
+/* Action buttons */
+#actions {
+    margin-top: 20px;
+}
+
+#actions button {
+    margin: 5px;
+    padding: 10px 20px;
+    font-size: 18px;
+    cursor: pointer;
+}

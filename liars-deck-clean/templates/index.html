@@ -1,0 +1,154 @@
+<!DOCTYPE HTML>
+<!--
+    Story by HTML5 UP
+    html5up.net | @ajlkn
+    Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+<head>
+    <title>Liar's Deck</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="static/assets/css/main.css" />
+	<link rel="icon" type="image/x-icon" href="static/images/jp.ico">
+    <noscript><link rel="stylesheet" href="static/assets/css/noscript.css" /></noscript>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body class="is-preload">
+
+    <!-- Wrapper -->
+    <div id="wrapper" class="divided">
+
+        <!-- One -->
+        <section class="banner style1 orient-left content-align-left image-position-right fullscreen onload-image-fade-in onload-content-fade-right">
+            <div class="content">
+                <h1>Liar's Deck</h1>
+                <ul id = "menuButtons" class="actions stacked">
+                    <li><button class="button big wide smooth-scroll-middle" onclick="showJoinLobby()">Join Lobby</button></li>
+                    <li><button href="#first" class="button big wide smooth-scroll-middle" onclick = "showCreateLobby()">Create Lobby</button></li>
+                    <li><a href="https://www.thegamer.com/liars-bar-how-to-play-liars-deck/" class="button big wide" target="_blank">How to play</a></li>
+                </ul>
+
+                <div id="joinLobbyDiv" style="display: none;">
+                    <input type="text" id="joinPlayerName" placeholder="Enter your name">
+                    <button onclick="joinLobby()">Join</button>
+                    <button onclick ="goBack()">Back</button>
+                </div>
+
+                <div id="createLobbyDiv" style="display: none;">
+                    <input type="text" id="createPlayerName" placeholder="Enter your name">
+                    <button onclick ="createLobby()">Start</button>
+                    <button onclick ="goBack()">Back</button>
+                </div>
+            </div>
+            <div class="image">
+                <img src="static/images/banner.png" alt="" />
+            </div>
+        </section>
+
+
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        function showJoinLobby() {
+            document.getElementById("menuButtons").style.display = "none";
+            document.getElementById("joinLobbyDiv").style.display = "block";
+        }
+
+        function showCreateLobby() {
+            document.getElementById("menuButtons").style.display = "none";
+            document.getElementById("createLobbyDiv").style.display = "block";
+        }
+
+        function goBack() {
+            document.getElementById("menuButtons").style.display = "block"
+            document.getElementById("joinLobbyDiv").style.display = "none"
+            document.getElementById("createLobbyDiv").style.display = "none"
+        }
+
+        async function joinLobby() {
+            const name = document.getElementById("joinPlayerName").value;
+            if (!name) {
+                alert("Please enter a name!");
+                return;
+            }
+
+            const response = await fetch('/api/lobby/join', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name })
+            });
+
+            const result = await response.json();
+            if (result.error) {
+                alert(result.error)
+            } else {
+                sessionStorage.setItem("playerName", name)
+                window.location.href = "/lobby"
+            }
+            updateLobby();
+        }
+
+        async function createLobby() {
+            const name = document.getElementById("createPlayerName").value;
+            if (!name) {
+                alert("Please enter a name!");
+                return;
+            }
+
+            const response = await fetch('/api/lobby/join', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name })
+            });
+
+            const result = await response.json();
+
+            if (result.error) {
+                alert(result.error)
+            } else {
+                sessionStorage.setItem("playerName", name)
+                window.location.href = "/lobby"
+            }
+
+            updateLobby()
+        }
+
+        async function startGame() {
+            const response = await fetch('/api/lobby/start', {
+                method: "POST"
+            });
+
+            const result = await response.json();
+            alert(result.message || result.error);
+
+            document.getElementById("createGameDiv").style.display = "block";
+        }
+
+        async function updateLobby() {
+            const response = await fetch('/api/lobby/status');
+            const data = await response.json();
+            const playerList = document.getElementById(playerList);
+            playerList.innerHTML = "";
+
+            data.players.forEach(player => {
+                const li = document.createElement("li");
+                li.innerText - '${player.name} - ${player.is_ready}';
+                playerList.appendChild(li)
+            });
+        }
+
+        setInterval(updateLobby, 2000)
+    </script>
+
+    <script src="static/assets/js/jquery.min.js"></script>
+    <script src="static/assets/js/jquery.scrollex.min.js"></script>
+    <script src="static/assets/js/jquery.scrolly.min.js"></script>
+    <script src="static/assets/js/browser.min.js"></script>
+    <script src="static/assets/js/breakpoints.min.js"></script>
+    <script src="static/assets/js/util.js"></script>
+    <script src="static/assets/js/main.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>Game Lobby - Liar's Deck</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="/static/assets/css/main.css">
+    <link rel="icon" type="image/x-icon" href="/static/images/jp.ico">
+
+    <style>
+        body {
+            background: url('/static/images/lobby.jpg') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6); /* Slightly transparent dark overlay */
+            backdrop-filter: blur(10px); /* Background blur effect */
+        }
+
+        .lobby-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.9); /* White box with transparency */
+            padding: 30px;
+            width: 400px;
+            border-radius: 12px;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        #playerList {
+            list-style: none;
+            padding: 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        #playerList li {
+            padding: 10px;
+            font-size: 18px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .btn {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .btn-ready {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-leave {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-start {
+            background-color: #007bff;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Popup Lobby -->
+    <div class="lobby-container">
+        <h1>Game Lobby</h1>
+        <h3 id="lobbyId">Lobby ID: 12345</h3>
+        <h3>Players:</h3>
+        <ul id="playerList"></ul>
+
+        <button class="btn btn-ready" onclick="toggleReady()">Toggle Ready</button>
+        <button class="btn btn-start" onclick="startGame()">Start Game</button>
+        <button class="btn btn-leave" onclick="leaveLobby()">Leave Lobby</button>
+    </div>
+
+    <script>
+        async function updateLobby() {
+            const response = await fetch('/api/lobby/status');
+            const data = await response.json();
+
+            const playerList = document.getElementById("playerList");
+            playerList.innerHTML = "";
+
+            data.players.forEach(player => {
+                const li = document.createElement("li");
+                li.innerText = `${player.name} - ${player.is_ready ? '✅ Ready' : '❌ Not Ready'}`;
+                playerList.appendChild(li);
+            });
+
+            document.getElementById("lobbyId").innerText = `Lobby ID: 12345`; // Placeholder for future lobby ID system
+        }
+
+        async function toggleReady() {
+            const name = sessionStorage.getItem("playerName");
+            if (!name) return alert("You are not in a lobby!");
+
+            const response = await fetch('/api/lobby/ready', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name })
+            });
+
+            const result = await response.json();
+            if (result.error)
+                alert(result.error)
+            updateLobby();
+        }
+
+        async function startGame() {
+            const response = await fetch('/api/lobby/start', { method: "POST" });
+            const result = await response.json();
+
+            console.log("Server Response:", result)
+            
+            if (result.message || result.error) {
+                alert(result.message || result.error);
+                console.log(result.message || result.error);
+            }
+            // Redirect to game page if game starts
+
+            window.location.href = "/game"
+        }
+
+        async function leaveLobby() {
+            const name = sessionStorage.getItem("playerName");
+            if (!name) return alert("You are not in a lobby!");
+
+            const response = await fetch('/api/lobby/leave', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name })
+            });
+
+            const result = await response.json();
+            if (result.error) {
+                alert(result.error)
+            }
+
+            window.location.href = "/"; // Redirect back to homepage
+        }
+
+        setInterval(updateLobby, 2000);
+        updateLobby();
+    </script>
+
+</body>
+</html>
